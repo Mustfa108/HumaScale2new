@@ -1,0 +1,127 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* =========================================
+   Global base
+   ========================================= */
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  html {
+    font-family: 'Cairo', 'Tajawal', system-ui, sans-serif;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-slate-50 text-slate-900;
+    font-feature-settings: 'kern';
+  }
+
+  /* RTL scrollbar polish */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-slate-100;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-slate-300 rounded-full;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-slate-400;
+  }
+}
+
+/* =========================================
+   Reusable component classes
+   ========================================= */
+@layer components {
+  .container-page {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+
+  .card {
+    @apply rounded-2xl bg-white shadow-card border border-slate-100;
+  }
+
+  .card-padded {
+    @apply card p-6 md:p-8;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2;
+  }
+
+  .btn-primary {
+    @apply btn bg-brand-600 text-white hover:bg-brand-700 focus:ring-brand-500 shadow-sm hover:shadow;
+  }
+
+  .btn-secondary {
+    @apply btn bg-white text-slate-800 border border-slate-200 hover:bg-slate-50 focus:ring-slate-300;
+  }
+
+  .btn-danger {
+    @apply btn bg-red-600 text-white hover:bg-red-700 focus:ring-red-500;
+  }
+
+  .btn-ghost {
+    @apply btn bg-transparent text-slate-700 hover:bg-slate-100;
+  }
+
+  .input {
+    @apply w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm shadow-sm transition placeholder:text-slate-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200;
+  }
+
+  .label {
+    @apply block text-sm font-medium text-slate-700 mb-1.5;
+  }
+
+  .badge {
+    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium;
+  }
+
+  .badge-good {
+    @apply badge bg-emerald-50 text-emerald-700;
+  }
+  .badge-medium {
+    @apply badge bg-amber-50 text-amber-700;
+  }
+  .badge-low {
+    @apply badge bg-red-50 text-red-700;
+  }
+  .badge-neutral {
+    @apply badge bg-slate-100 text-slate-700;
+  }
+
+  .skeleton {
+    @apply animate-pulse rounded-md bg-slate-200;
+  }
+
+  .heading-1 {
+    @apply text-3xl md:text-4xl font-bold text-slate-900 tracking-tight;
+  }
+  .heading-2 {
+    @apply text-2xl md:text-3xl font-bold text-slate-900 tracking-tight;
+  }
+  .heading-3 {
+    @apply text-xl md:text-2xl font-bold text-slate-900;
+  }
+}
+
+/* =========================================
+   Utilities
+   ========================================= */
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Recharts polish for RTL: invert the legend side */
+  .recharts-default-legend {
+    direction: rtl;
+  }
+}
