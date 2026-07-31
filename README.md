@@ -32,10 +32,30 @@
 التحليلات المتقدمة: تحتوي لوحة الأدمن على قسم خاص للتحليلات (Analytics) يعرض رسومًا بيانية توضح أداء المحاور المختلفة على مستوى المنصة بأكملها.
 
 4. الإحصاءات الفنية للمشروع
-إجمالي ملفات الواجهة الأمامية (Frontend): 49 ملف (JSX / JS).
+إجمالي ملفات الواجهة الأمامية 
+(Frontend): 49 ملف (JSX / JS).
 
 إجمالي سطور الكود: 5,470 سطر.
+/////////////////////////
+بالتأكيد، إليك فقط المتطلبات الأساسية وكودي التشغيل للباك إند والفرونت إند في نص واحد:
 
+---
+
+PHP 8.3 مع Composer، Node.js إصدار 20 أو أعلى، MySQL أو MariaDB، و Git.
+
+لتشغيل الباك إند:
+cd Backend/Backend
+composer install
+cp .env.example .env
+php artisan key:generate
+(أنشئ قاعدة بيانات باسم humascale وعدل ملف .env)
+php artisan migrate --seed
+php artisan serve
+
+لتشغيل الفرونت إند:
+cd Frontend/humascale-frontend
+npm install
+npm run dev
 حجم الحزمة النهائية (Build Size): 797 كيلوبايت إجمالاً (216 كيلوبايت مضغوط للـ JavaScript، و 6.3 كيلوبايت مضغوط للـ CSS).
 
 حالة البناء: npm run build تم تنفيذها بنجاح وبدون أي أخطاء في الترتيب (Dependencies).
