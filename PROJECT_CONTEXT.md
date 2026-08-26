@@ -14,6 +14,8 @@ HumaScale is a readiness assessment platform for nonprofit teams. Users answer *
 | Frontend | `Frontend/humascale-frontend` | React 18, Vite 5, Tailwind, Axios, Recharts |
 | Docs | `docs/` | API, FE guide, modules, Hoppscotch |
 
+**Start here for flow:** [`docs/system-flow.md`](docs/system-flow.md)
+
 **Do not** treat Express / `humascale-full (2)` as the live app.
 
 ## Business Rules

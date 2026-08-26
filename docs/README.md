@@ -7,6 +7,7 @@ Canonical stack: **Laravel backend** + **React frontend**. Ignore Express archiv
 | File | Purpose |
 |---|---|
 | [PROJECT_CONTEXT.md](../PROJECT_CONTEXT.md) | Persistent agent memory |
+| [system-flow.md](system-flow.md) | **End-to-end system flow** (Backend + Frontend overview) |
 | [improvements.md](improvements.md) | Current maintenance / delivery plan |
 | [project-progress.md](project-progress.md) | Progress tracker |
 | [backend.md](backend.md) | Backend architecture |
