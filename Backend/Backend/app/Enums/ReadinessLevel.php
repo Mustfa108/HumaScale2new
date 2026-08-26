@@ -17,6 +17,15 @@ enum ReadinessLevel: string
         };
     }
 
+    public function labelEn(): string
+    {
+        return match ($this) {
+            self::LOW => 'Low',
+            self::MEDIUM => 'Medium',
+            self::GOOD => 'Good',
+        };
+    }
+
     public function color(): string
     {
         return match ($this) {
@@ -26,10 +35,13 @@ enum ReadinessLevel: string
         };
     }
 
+    /**
+     * Official thresholds: 0–49 low, 50–69 medium, 70–100 good.
+     */
     public static function fromScore(float $score): self
     {
         return match (true) {
-            $score < 40 => self::LOW,
+            $score < 50 => self::LOW,
             $score < 70 => self::MEDIUM,
             default => self::GOOD,
         };

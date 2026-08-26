@@ -13,7 +13,9 @@ class Pillar extends Model
     protected $fillable = [
         'key',
         'name_ar',
+        'name_en',
         'description_ar',
+        'description_en',
         'display_order',
     ];
 

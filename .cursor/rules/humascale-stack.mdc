@@ -1,0 +1,16 @@
+---
+description: HumaScale stack and paths — always prefer Laravel/React
+globs:
+alwaysApply: true
+---
+
+# HumaScale stack rule
+
+- Canonical backend: `Backend/Backend` (Laravel 13 + Sanctum).
+- Canonical frontend: `Frontend/humascale-frontend` (React + Vite).
+- Never implement features against Express / `humascale-full (2)` / `artifacts/api-server`.
+- Read `PROJECT_CONTEXT.md` before large changes.
+- Official readiness: score &lt; 50 → low, &lt; 70 → medium, else good.
+- AI must not change scores, readiness, weak pillars, phases, or KPIs.
+- This phase: Backend + docs only unless the user explicitly asks for React changes.
+- Frontend work instructions live in `docs/frontend-implementation-guide.md`.

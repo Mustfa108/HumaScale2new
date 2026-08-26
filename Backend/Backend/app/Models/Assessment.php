@@ -27,7 +27,7 @@ class Assessment extends Model
     {
         return [
             'ai_generated_at' => 'datetime',
-            'overall_score'   => 'float',
+            'overall_score' => 'float',
         ];
     }
 
@@ -53,31 +53,26 @@ class Assessment extends Model
 
     public function getReadinessLevelArAttribute(): string
     {
-        return match ($this->readiness_level) {
-            'low'    => 'منخفض',
-            'medium' => 'متوسط',
-            'good'   => 'جيد',
-            default  => 'غير محدد',
-        };
+        return ReadinessLevel::tryFrom((string) $this->readiness_level)?->labelAr() ?? 'غير محدد';
+    }
+
+    public function getReadinessLevelEnAttribute(): string
+    {
+        return ReadinessLevel::tryFrom((string) $this->readiness_level)?->labelEn() ?? 'Unknown';
     }
 
     public function getReadinessColorAttribute(): string
     {
-        return match ($this->readiness_level) {
-            'low'    => '#DC2626',
-            'medium' => '#F59E0B',
-            'good'   => '#16A34A',
-            default  => '#6B7280',
-        };
+        return ReadinessLevel::tryFrom((string) $this->readiness_level)?->color() ?? '#6B7280';
     }
 
     public function getAiReadyAttribute(): bool
     {
-        return !is_null($this->ai_generated_at);
+        return ! is_null($this->ai_generated_at);
     }
 
     public function getPdfReadyAttribute(): bool
     {
-        return !is_null($this->pdf_path);
+        return ! is_null($this->pdf_path);
     }
 }

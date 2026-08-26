@@ -19,6 +19,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'email',
         'password',
         'organization_name',
+        'locale',
+        'theme',
     ];
 
     protected $hidden = [
@@ -37,6 +39,11 @@ class User extends Authenticatable implements MustVerifyEmail
     public function assessments(): HasMany
     {
         return $this->hasMany(Assessment::class);
+    }
+
+    public function expansionAreas(): HasMany
+    {
+        return $this->hasMany(ExpansionArea::class);
     }
 
     public function latestAssessment(): HasOne

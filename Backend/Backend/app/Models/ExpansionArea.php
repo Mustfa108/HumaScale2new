@@ -6,27 +6,29 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Question extends Model
+class ExpansionArea extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'pillar_id',
-        'text_ar',
-        'text_en',
-        'display_order',
-        'is_active',
+        'user_id',
+        'name_ar',
+        'name_en',
+        'lat',
+        'lng',
+        'notes',
     ];
 
     protected function casts(): array
     {
         return [
-            'is_active' => 'boolean',
+            'lat' => 'float',
+            'lng' => 'float',
         ];
     }
 
-    public function pillar(): BelongsTo
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(Pillar::class);
+        return $this->belongsTo(User::class);
     }
 }

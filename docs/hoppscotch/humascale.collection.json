@@ -1,0 +1,249 @@
+{
+  "v": 8,
+  "name": "HumaScale API",
+  "folders": [
+    {
+      "v": 8,
+      "name": "Auth",
+      "folders": [],
+      "requests": [
+        {
+          "v": "12",
+          "name": "Login",
+          "method": "POST",
+          "endpoint": "<<baseUrl>>/auth/login",
+          "params": [],
+          "headers": [
+            { "key": "Accept", "value": "application/json", "active": true, "description": "Expect JSON envelope." }
+          ],
+          "auth": { "authType": "none", "authActive": true },
+          "body": {
+            "contentType": "application/json",
+            "body": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password\"\n}"
+          },
+          "description": "## POST /api/auth/login (Public)\n\n### Request body\n- email (string, required): User email. Example: user@example.com\n- password (string, required): Account password. Example: password\n\n### Success 200 data\n- token (string): Sanctum bearer token. Example: 1|abc\n- user (object): id, name, email, organization_name, locale (ar|en), theme (light|dark|system)\n\n### Errors\n- 401 invalid credentials\n- 422 validation\n- 429 rate limit"
+        },
+        {
+          "v": "12",
+          "name": "Me",
+          "method": "GET",
+          "endpoint": "<<baseUrl>>/auth/me",
+          "headers": [
+            { "key": "Authorization", "value": "Bearer <<token>>", "active": true, "description": "Sanctum bearer token from login." }
+          ],
+          "auth": { "authType": "bearer", "authActive": true, "token": "<<token>>" },
+          "body": { "contentType": null, "body": null },
+          "description": "## GET /api/auth/me\n\nAuth required.\n\n### Response\n- id (integer): User id. Example: 1\n- name (string): Display name\n- email (string): Login email\n- organization_name (string, nullable): Organization\n- locale (string): ar or en. Default ar\n- theme (string): light, dark, or system. Default system\n- email_verified_at (datetime, nullable)\n\n### Errors\n- 401 unauthenticated"
+        }
+      ]
+    },
+    {
+      "v": 8,
+      "name": "Preferences",
+      "folders": [],
+      "requests": [
+        {
+          "v": "12",
+          "name": "Get preferences",
+          "method": "GET",
+          "endpoint": "<<baseUrl>>/profile/preferences",
+          "headers": [
+            { "key": "Authorization", "value": "Bearer <<token>>", "active": true, "description": "Sanctum bearer token." }
+          ],
+          "auth": { "authType": "bearer", "authActive": true, "token": "<<token>>" },
+          "body": { "contentType": null, "body": null },
+          "description": "## GET /api/profile/preferences\n\n### Response data\n- locale (string, not nullable): Saved UI language. Values: ar, en. Example: ar. Business: frontend uses this to pick *_ar vs *_en and RTL/LTR.\n- theme (string, not nullable): Saved color theme. Values: light, dark, system. Example: system. Business: frontend-only visual; backend stores it.\n\n### Errors\n- 401 unauthenticated"
+        },
+        {
+          "v": "12",
+          "name": "Update preferences",
+          "method": "PATCH",
+          "endpoint": "<<baseUrl>>/profile/preferences",
+          "headers": [
+            { "key": "Authorization", "value": "Bearer <<token>>", "active": true, "description": "Sanctum bearer token." },
+            { "key": "Content-Type", "value": "application/json", "active": true, "description": "JSON body." }
+          ],
+          "auth": { "authType": "bearer", "authActive": true, "token": "<<token>>" },
+          "body": {
+            "contentType": "application/json",
+            "body": "{\n  \"locale\": \"en\",\n  \"theme\": \"dark\"\n}"
+          },
+          "description": "## PATCH /api/profile/preferences\n\n### Request body (all optional, send at least one)\n- locale (string, optional): ar or en. Example: en\n- theme (string, optional): light, dark, system. Example: dark\n\n### Response data\n- locale (string): Saved language\n- theme (string): Saved theme\n\n### Errors\n- 401 unauthenticated\n- 422 invalid locale or theme"
+        }
+      ]
+    },
+    {
+      "v": 8,
+      "name": "Assessment",
+      "folders": [],
+      "requests": [
+        {
+          "v": "12",
+          "name": "Questions",
+          "method": "GET",
+          "endpoint": "<<baseUrl>>/assessment/questions",
+          "headers": [
+            { "key": "Authorization", "value": "Bearer <<token>>", "active": true, "description": "Sanctum bearer token." }
+          ],
+          "auth": { "authType": "bearer", "authActive": true, "token": "<<token>>" },
+          "body": { "contentType": null, "body": null },
+          "description": "## GET /api/assessment/questions\n\n### Response data\n- total_questions (integer): Always 18 after seed. Example: 18\n- pillars (array): Six readiness pillars.\n  - id (integer)\n  - key (string): team, funding, impact, partnerships, technology, sustainability\n  - name_ar / name_en (string): Display names\n  - description_ar / description_en (string, nullable en): Pillar meaning\n  - questions (array of 3):\n    - id (integer): Use in submit answers.question_id\n    - text_ar / text_en (string): Question text\n    - display_order (integer): 1-3 within pillar\n\n### Errors\n- 401 unauthenticated"
+        },
+        {
+          "v": "12",
+          "name": "Start",
+          "method": "POST",
+          "endpoint": "<<baseUrl>>/assessment/start",
+          "headers": [
+            { "key": "Authorization", "value": "Bearer <<token>>", "active": true, "description": "Sanctum bearer token." }
+          ],
+          "auth": { "authType": "bearer", "authActive": true, "token": "<<token>>" },
+          "body": { "contentType": null, "body": null },
+          "description": "## POST /api/assessment/start\n\nNo body. Resumes existing in_progress assessment if any.\n\n### Response data\n- assessment_id (integer): Id to submit against. Example: 7\n- status (string, optional): in_progress when resuming\n\n### Errors\n- 401 unauthenticated"
+        },
+        {
+          "v": "12",
+          "name": "Submit",
+          "method": "POST",
+          "endpoint": "<<baseUrl>>/assessment/<<assessmentId>>/submit",
+          "headers": [
+            { "key": "Authorization", "value": "Bearer <<token>>", "active": true, "description": "Sanctum bearer token." }
+          ],
+          "auth": { "authType": "bearer", "authActive": true, "token": "<<token>>" },
+          "body": {
+            "contentType": "application/json",
+            "body": "{\n  \"answers\": [\n    { \"question_id\": 1, \"score\": 3 }\n  ]\n}"
+          },
+          "description": "## POST /api/assessment/{id}/submit\n\n### Path\n- id (integer, required): Assessment id from start\n\n### Request body\n- answers (array, required): Exactly 18 items\n  - question_id (integer, required): Must exist, distinct\n  - score (integer, required): 1-5 Likert\n\nBusiness: scoring is rule-based. AI/PDF run after commit.\n\n### Success data\n- assessment_id (integer)\n\n### Errors\n- 401 unauthenticated\n- 403 not owner\n- 422 size != 18, score out of range, already completed"
+        },
+        {
+          "v": "12",
+          "name": "Results",
+          "method": "GET",
+          "endpoint": "<<baseUrl>>/assessment/<<assessmentId>>/results",
+          "headers": [
+            { "key": "Authorization", "value": "Bearer <<token>>", "active": true, "description": "Sanctum bearer token." }
+          ],
+          "auth": { "authType": "bearer", "authActive": true, "token": "<<token>>" },
+          "body": { "contentType": null, "body": null },
+          "description": "## GET /api/assessment/{id}/results\n\n### data.assessment\n- overall_score (number): 0-100 average of 6 pillars. Example: 60\n- readiness_level (string): low if <50, medium if <70, else good\n- readiness_level_ar / readiness_level_en (string)\n- ai_summary_ar (string, nullable): Linguistic summary only\n- ai_ready / pdf_ready (boolean)\n\n### data.pillar_results[]\n- percentage (number), is_weak (boolean): true for weakest 3\n- pillar_name_ar / pillar_name_en\n\n### data.action_plan.phases.{immediate,medium,long}.items[]\n- id (integer): Use in PATCH action-plan/items/{id}\n- action_ar / action_en (string): Rule text\n- kpi_ar / kpi_en (string): Rule KPIs, never AI\n- ai_rephrased_ar / ai_rephrased_en (string, nullable): Display fallback to action_*\n- status (string): not_started | in_progress | completed\n\n### Errors\n- 403 not owner\n- 422 not completed yet"
+        }
+      ]
+    },
+    {
+      "v": 8,
+      "name": "Action plan",
+      "folders": [],
+      "requests": [
+        {
+          "v": "12",
+          "name": "Update item status",
+          "method": "PATCH",
+          "endpoint": "<<baseUrl>>/action-plan/items/<<itemId>>",
+          "headers": [
+            { "key": "Authorization", "value": "Bearer <<token>>", "active": true, "description": "Sanctum bearer token." }
+          ],
+          "auth": { "authType": "bearer", "authActive": true, "token": "<<token>>" },
+          "body": {
+            "contentType": "application/json",
+            "body": "{\n  \"status\": \"in_progress\"\n}"
+          },
+          "description": "## PATCH /api/action-plan/items/{id}\n\n### Path\n- id (integer, required): Action plan item id from results\n\n### Request body\n- status (string, required): not_started | in_progress | completed. Example: in_progress. Business: user progress on a rule-based task; does not change scores.\n\n### Response data\n- id (integer)\n- status (string)\n- status_ar (string): لم تبدأ / قيد التنفيذ / مكتملة\n- status_en (string): Not started / In progress / Completed\n\n### Errors\n- 401 unauthenticated\n- 403 not owner of parent assessment\n- 404 missing item\n- 422 invalid status"
+        }
+      ]
+    },
+    {
+      "v": 8,
+      "name": "Expansion areas",
+      "folders": [],
+      "requests": [
+        {
+          "v": "12",
+          "name": "List",
+          "method": "GET",
+          "endpoint": "<<baseUrl>>/expansion-areas",
+          "headers": [
+            { "key": "Authorization", "value": "Bearer <<token>>", "active": true, "description": "Sanctum bearer token." }
+          ],
+          "auth": { "authType": "bearer", "authActive": true, "token": "<<token>>" },
+          "body": { "contentType": null, "body": null },
+          "description": "## GET /api/expansion-areas\n\nReturns only the authenticated user's map pins.\n\n### data.items[]\n- id (integer)\n- name_ar (string): Arabic place name. Example: الرياض\n- name_en (string, nullable): English name. Example: Riyadh\n- lat (number): Latitude -90..90. Example: 24.7136\n- lng (number): Longitude -180..180. Example: 46.6753\n- notes (string, nullable): Optional context\n- created_at / updated_at (datetime)\n\n### Errors\n- 401 unauthenticated"
+        },
+        {
+          "v": "12",
+          "name": "Create",
+          "method": "POST",
+          "endpoint": "<<baseUrl>>/expansion-areas",
+          "headers": [
+            { "key": "Authorization", "value": "Bearer <<token>>", "active": true, "description": "Sanctum bearer token." }
+          ],
+          "auth": { "authType": "bearer", "authActive": true, "token": "<<token>>" },
+          "body": {
+            "contentType": "application/json",
+            "body": "{\n  \"name_ar\": \"الرياض\",\n  \"name_en\": \"Riyadh\",\n  \"lat\": 24.7136,\n  \"lng\": 46.6753,\n  \"notes\": \"منطقة مستهدفة\"\n}"
+          },
+          "description": "## POST /api/expansion-areas\n\n### Request body\n- name_ar (string, required, max 255)\n- name_en (string, optional, max 255)\n- lat (number, required, -90 to 90)\n- lng (number, required, -180 to 180)\n- notes (string, optional, max 2000)\n\n### Success 201: same item object as list.\n\n### Errors\n- 401, 422 invalid coordinates or missing name_ar"
+        },
+        {
+          "v": "12",
+          "name": "Update",
+          "method": "PATCH",
+          "endpoint": "<<baseUrl>>/expansion-areas/<<areaId>>",
+          "headers": [
+            { "key": "Authorization", "value": "Bearer <<token>>", "active": true, "description": "Sanctum bearer token." }
+          ],
+          "auth": { "authType": "bearer", "authActive": true, "token": "<<token>>" },
+          "body": {
+            "contentType": "application/json",
+            "body": "{\n  \"name_en\": \"Riyadh City\"\n}"
+          },
+          "description": "## PATCH /api/expansion-areas/{id}\n\nSame fields as create, all optional. 403 if another user's area. 404 if missing."
+        },
+        {
+          "v": "12",
+          "name": "Delete",
+          "method": "DELETE",
+          "endpoint": "<<baseUrl>>/expansion-areas/<<areaId>>",
+          "headers": [
+            { "key": "Authorization", "value": "Bearer <<token>>", "active": true, "description": "Sanctum bearer token." }
+          ],
+          "auth": { "authType": "bearer", "authActive": true, "token": "<<token>>" },
+          "body": { "contentType": null, "body": null },
+          "description": "## DELETE /api/expansion-areas/{id}\n\n403 if not owner. 404 if missing. Success message only."
+        }
+      ]
+    },
+    {
+      "v": 8,
+      "name": "Reports",
+      "folders": [],
+      "requests": [
+        {
+          "v": "12",
+          "name": "PDF status",
+          "method": "GET",
+          "endpoint": "<<baseUrl>>/report/<<assessmentId>>/status",
+          "headers": [
+            { "key": "Authorization", "value": "Bearer <<token>>", "active": true, "description": "Sanctum bearer token." }
+          ],
+          "auth": { "authType": "bearer", "authActive": true, "token": "<<token>>" },
+          "body": { "contentType": null, "body": null },
+          "description": "## GET /api/report/{assessment_id}/status\n\n### Response data\n- assessment_id (integer)\n- pdf_ready (boolean): Whether download will succeed\n- ai_ready (boolean): Whether summary exists. False is valid fallback, scores still stand.\n- download_via (string): Instruction. Frontend MUST call GET /api/report/{id}/download with Bearer. No public storage URL is returned.\n\n### Errors\n- 401, 403"
+        },
+        {
+          "v": "12",
+          "name": "PDF download",
+          "method": "GET",
+          "endpoint": "<<baseUrl>>/report/<<assessmentId>>/download",
+          "headers": [
+            { "key": "Authorization", "value": "Bearer <<token>>", "active": true, "description": "Sanctum bearer token." }
+          ],
+          "auth": { "authType": "bearer", "authActive": true, "token": "<<token>>" },
+          "body": { "contentType": null, "body": null },
+          "description": "## GET /api/report/{assessment_id}/download\n\nBinary PDF. Save as blob in frontend.\n\n### Errors\n- 403 not owner\n- 422 pdf not generated yet\n- 404 file missing on disk"
+        }
+      ]
+    }
+  ],
+  "requests": []
+}

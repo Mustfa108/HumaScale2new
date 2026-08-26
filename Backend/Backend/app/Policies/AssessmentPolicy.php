@@ -14,6 +14,6 @@ class AssessmentPolicy
 
     public function submit(User $user, Assessment $assessment): bool
     {
-        return $user->id === $assessment->user_id && $assessment->status === 'in_progress';
+        return $user->id === $assessment->user_id;
     }
 }
