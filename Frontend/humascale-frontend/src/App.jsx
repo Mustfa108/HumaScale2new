@@ -21,6 +21,7 @@ import AssessmentResults from './pages/user/AssessmentResults';
 import History from './pages/user/History';
 import Profile from './pages/user/Profile';
 import Notifications from './pages/user/Notifications';
+import ExpansionMap from './pages/user/ExpansionMap';
 
 // Admin pages
 import AdminLogin from './pages/admin/AdminLogin';
@@ -126,6 +127,14 @@ export default function App() {
         element={
           <ProtectedRoute>
             <Notifications />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/expansion"
+        element={
+          <ProtectedRoute>
+            <ExpansionMap />
           </ProtectedRoute>
         }
       />

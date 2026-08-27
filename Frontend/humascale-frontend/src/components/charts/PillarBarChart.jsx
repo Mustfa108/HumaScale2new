@@ -14,11 +14,11 @@ import { readinessFromScore } from '../../utils/constants';
  * Vertical bar chart of pillar percentages. Bars are colored by
  * their score band so the chart "reads" like a readiness overview.
  */
-export function PillarBarChart({ data = [], height = 280 }) {
+export function PillarBarChart({ data = [], height = 280, locale = 'ar' }) {
   const chartData = data.map((d) => {
     const cfg = readinessFromScore(Number(d.percentage) || 0);
     return {
-      name: d.pillar_ar,
+      name: d.pillar_en && locale === 'en' ? d.pillar_en : d.pillar_ar || d.pillar_name_ar,
       value: Number(d.percentage) || 0,
       color: cfg.color,
       isWeak: d.is_weak,

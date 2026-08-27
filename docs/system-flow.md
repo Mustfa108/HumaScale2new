@@ -274,11 +274,12 @@ Examples of **422 business rules:** incomplete survey, score outside 1–5, resu
 
 1. This file — system flow  
 2. [`PROJECT_CONTEXT.md`](../PROJECT_CONTEXT.md) — decisions and paths  
-3. [`api-documentation.md`](api-documentation.md) — exact contracts  
-4. [`backend.md`](backend.md) — Backend internals  
-5. [`frontend.md`](frontend.md) + [`frontend-implementation-guide.md`](frontend-implementation-guide.md) — FE current vs next  
-6. Module deep-dives: [`modules/scoring.md`](modules/scoring.md), [`action-plan.md`](modules/action-plan.md), [`map.md`](modules/map.md), [`i18n-theme.md`](modules/i18n-theme.md)  
-7. Hoppscotch: [`hoppscotch/humascale.collection.json`](hoppscotch/humascale.collection.json)
+3. [`backend-schema.md`](backend-schema.md) — tables and fields  
+4. [`api-documentation.md`](api-documentation.md) — exact HTTP contracts  
+5. [`backend.md`](backend.md) — Backend internals  
+6. [`frontend.md`](frontend.md) + [`frontend-implementation-plan.md`](frontend-implementation-plan.md) — FE current vs next  
+7. Module deep-dives: [`modules/scoring.md`](modules/scoring.md), [`action-plan.md`](modules/action-plan.md), [`map.md`](modules/map.md), [`i18n-theme.md`](modules/i18n-theme.md)  
+8. Hoppscotch: [`hoppscotch/humascale.collection.json`](hoppscotch/humascale.collection.json)
 
 ---
 

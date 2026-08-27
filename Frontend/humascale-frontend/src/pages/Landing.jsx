@@ -16,7 +16,7 @@ export default function Landing() {
   useDocumentTitle('الرئيسية');
 
   return (
-    <div className="min-h-screen bg-white" dir="rtl">
+    <div className="min-h-screen bg-white dark:bg-slate-950">
       {/* Top nav */}
       <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/80 backdrop-blur">
         <div className="container-page flex h-16 items-center justify-between">

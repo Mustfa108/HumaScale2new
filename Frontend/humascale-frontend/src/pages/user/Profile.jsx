@@ -1,6 +1,8 @@
 import { useState } from 'react';
-import { Building2, Mail, ShieldCheck, User as UserIcon } from 'lucide-react';
+import { Building2, Mail, ShieldCheck, User as UserIcon, Globe, Moon } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { useLanguage } from '../../contexts/LanguageContext';
+import { useTheme } from '../../contexts/ThemeContext';
 import { useToast } from '../../contexts/ToastContext';
 import { authApi } from '../../api/auth';
 import { useDocumentTitle } from '../../hooks/useDocumentTitle';
@@ -11,8 +13,10 @@ import { Button } from '../../components/ui/Button';
 import { formatDate } from '../../utils/format';
 
 export default function Profile() {
-  useDocumentTitle('الملف الشخصي');
+  const { t, locale, setLocale } = useLanguage();
+  useDocumentTitle(t('profile.title'));
   const { user, refreshUser, logout } = useAuth();
+  const { theme, setTheme } = useTheme();
   const toast = useToast();
 
   // Password change form
@@ -70,7 +74,7 @@ export default function Profile() {
 
   return (
     <PageContainer>
-      <PageHeader title="الملف الشخصي" subtitle="معلوماتك وإعدادات الأمان" />
+      <PageHeader title={t('profile.title')} subtitle={t('profile.subtitle')} />
 
       <div className="grid gap-5 lg:grid-cols-3">
         <Card className="lg:col-span-1">
@@ -123,6 +127,61 @@ export default function Profile() {
         </Card>
 
         <div className="space-y-5 lg:col-span-2">
+          <Card>
+            <CardHeader title={t('profile.preferences')} />
+            <CardBody className="space-y-4">
+              <div>
+                <p className="label flex items-center gap-2">
+                  <Globe size={14} />
+                  {t('common.language')}
+                </p>
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant={locale === 'ar' ? 'primary' : 'secondary'}
+                    onClick={async () => {
+                      await setLocale('ar');
+                      toast.success(t('profile.localeSaved'));
+                    }}
+                  >
+                    {t('common.arabic')}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant={locale === 'en' ? 'primary' : 'secondary'}
+                    onClick={async () => {
+                      await setLocale('en');
+                      toast.success(t('profile.localeSaved'));
+                    }}
+                  >
+                    {t('common.english')}
+                  </Button>
+                </div>
+              </div>
+              <div>
+                <p className="label flex items-center gap-2">
+                  <Moon size={14} />
+                  {t('common.theme')}
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {['light', 'dark', 'system'].map((value) => (
+                    <Button
+                      key={value}
+                      type="button"
+                      variant={theme === value ? 'primary' : 'secondary'}
+                      onClick={async () => {
+                        await setTheme(value);
+                        toast.success(t('profile.themeSaved'));
+                      }}
+                    >
+                      {t(`common.${value}`)}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            </CardBody>
+          </Card>
+
           {!user?.email_verified_at && (
             <Card>
               <CardBody>

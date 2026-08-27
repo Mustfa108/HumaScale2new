@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { unwrapEnvelope } from '../utils/api';
 
 /**
  * Generic async data hook.
@@ -20,7 +21,8 @@ export function useAsync(asyncFn, { immediate = true, deps = [] } = {}) {
   const run = useCallback(async (...args) => {
     setState((s) => ({ ...s, loading: true, error: null }));
     try {
-      const data = await fnRef.current(...args);
+      const raw = await fnRef.current(...args);
+      const data = unwrapEnvelope(raw);
       if (mounted.current) {
         setState({ data, error: null, loading: false });
       }

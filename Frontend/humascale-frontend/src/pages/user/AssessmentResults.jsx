@@ -15,9 +15,11 @@ import { useAsync } from '../../hooks/useAsync';
 import { useToast } from '../../contexts/ToastContext';
 import { useDocumentTitle } from '../../hooks/useDocumentTitle';
 import { assessmentApi } from '../../api/assessment';
-import { reportApi, downloadReport } from '../../api/report';
+import { downloadReport } from '../../api/report';
 import { readinessFromKey, readinessFromScore } from '../../utils/constants';
 import { formatDate, formatScore } from '../../utils/format';
+import { pillarLabel } from '../../utils/locale';
+import { useLanguage } from '../../contexts/LanguageContext';
 import { PageContainer, PageHeader } from '../../components/layout/Navbar';
 import { PillarRadarChart } from '../../components/charts/PillarRadarChart';
 import { PillarBarChart } from '../../components/charts/PillarBarChart';
@@ -40,7 +42,8 @@ function useAutoRefresh(ready, refresh, intervalMs = 8000) {
 }
 
 export default function AssessmentResults() {
-  useDocumentTitle('نتائج التقييم');
+  const { locale, t } = useLanguage();
+  useDocumentTitle(t('results.title'));
   const { id } = useParams();
   const toast = useToast();
 
@@ -108,19 +111,19 @@ export default function AssessmentResults() {
   return (
     <PageContainer>
       <PageHeader
-        title="نتائج التقييم"
-        subtitle={`تم التقييم في ${formatDate(assessment.created_at, { withTime: false })}`}
+        title={t('results.title')}
+        subtitle={`${locale === 'en' ? 'Completed' : 'تم التقييم في'} ${formatDate(assessment.created_at, { withTime: false })}`}
         actions={
           <div className="flex items-center gap-2">
             <Button variant="secondary" onClick={handleShare} leftIcon={<Share2 size={16} />}>
-              مشاركة
+              {locale === 'en' ? 'Share' : 'مشاركة'}
             </Button>
             <Button
               onClick={handleDownload}
               disabled={!assessment.pdf_ready}
               leftIcon={assessment.pdf_ready ? <FileDown size={16} /> : <Loader2 size={16} className="animate-spin" />}
             >
-              {assessment.pdf_ready ? 'تحميل PDF' : 'يتم تجهيز PDF…'}
+              {assessment.pdf_ready ? t('results.pdf') : t('results.pdfPending')}
             </Button>
           </div>
         }
@@ -132,7 +135,7 @@ export default function AssessmentResults() {
           <div className="grid items-center gap-6 md:grid-cols-3">
             <div className="text-center md:text-right">
               <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-                النتيجة الإجمالية
+                {t('results.overall')}
               </p>
               <p
                 className="mt-1 text-6xl font-extrabold"
@@ -144,18 +147,18 @@ export default function AssessmentResults() {
                 <ReadinessBadge level={assessment.readiness_level} />
               </div>
               <p className="mt-2 text-sm text-slate-600">
-                {readiness.description}
+                {locale === 'en' ? readiness.descriptionEn : readiness.description}
               </p>
             </div>
             <div className="md:col-span-2">
               <div className="mb-2 flex items-center gap-2 text-sm font-bold text-slate-700">
                 <Sparkles size={16} className="text-brand-600" />
-                ملخص ذكي
+                {t('dashboard.aiSummary')}
                 {assessment.ai_ready ? (
-                  <span className="badge-good">جاهز</span>
+                  <span className="badge-good">{locale === 'en' ? 'Ready' : 'جاهز'}</span>
                 ) : (
                   <span className="badge-neutral">
-                    <InlineSpinner label="قيد التوليد…" />
+                    <InlineSpinner label={t('common.loading')} />
                   </span>
                 )}
               </div>
@@ -165,8 +168,7 @@ export default function AssessmentResults() {
                 </p>
               ) : (
                 <p className="text-sm text-slate-500">
-                  يقوم النظام الآن بتحليل نتائجك وتوليد ملخص ذكي مخصص. هذه
-                  الصفحة تتحدث تلقائياً — لا حاجة لتحديثها يدوياً.
+                  {t('results.aiPending')}
                 </p>
               )}
             </div>
@@ -177,21 +179,22 @@ export default function AssessmentResults() {
       {/* Charts */}
       <div className="mt-5 grid gap-5 lg:grid-cols-2">
         <Card>
-          <CardHeader title="رادار المحاور" subtitle="نظرة شاملة على 6 محاور" />
+          <CardHeader title={t('results.radar')} subtitle={locale === 'en' ? 'Six pillars' : 'نظرة شاملة على 6 محاور'} />
           <CardBody>
             <PillarRadarChart
               data={pillars}
               fillColor={readiness.color}
               strokeColor={readiness.color}
               height={320}
+              locale={locale}
             />
           </CardBody>
         </Card>
 
         <Card>
-          <CardHeader title="تفاصيل المحاور" subtitle="النسبة المئوية لكل محور" />
+          <CardHeader title={t('results.pillars')} subtitle={locale === 'en' ? 'Percentage per pillar' : 'النسبة المئوية لكل محور'} />
           <CardBody>
-            <PillarBarChart data={pillars} height={320} />
+            <PillarBarChart data={pillars} height={320} locale={locale} />
           </CardBody>
         </Card>
       </div>
@@ -219,7 +222,7 @@ export default function AssessmentResults() {
                       className="border-t border-slate-100 transition hover:bg-slate-50"
                     >
                       <td className="px-6 py-3 font-semibold text-slate-800">
-                        {p.pillar_name_ar}
+                        {pillarLabel(p, locale)}
                       </td>
                       <td className="px-6 py-3 text-slate-600">
                         {p.raw_score} / {p.max_score}
@@ -242,9 +245,9 @@ export default function AssessmentResults() {
                       </td>
                       <td className="px-6 py-3">
                         {p.is_weak ? (
-                          <span className="badge-low">يحتاج تحسين</span>
+                          <span className="badge-low">{t('results.weak')}</span>
                         ) : (
-                          <span className="badge-good">جيد</span>
+                          <span className="badge-good">{t('results.strong')}</span>
                         )}
                       </td>
                     </tr>
@@ -260,7 +263,7 @@ export default function AssessmentResults() {
       <div className="mt-6">
         <h2 className="heading-3 mb-4 flex items-center gap-2">
           <TrendingUp size={20} className="text-brand-600" />
-          خطة العمل المقترحة
+          {t('results.plan')}
         </h2>
         {actionPlan ? (
           <ActionPlanView actionPlan={actionPlan} />

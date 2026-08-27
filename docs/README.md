@@ -11,9 +11,11 @@ Canonical stack: **Laravel backend** + **React frontend**. Ignore Express archiv
 | [improvements.md](improvements.md) | Current maintenance / delivery plan |
 | [project-progress.md](project-progress.md) | Progress tracker |
 | [backend.md](backend.md) | Backend architecture |
-| [api-documentation.md](api-documentation.md) | All API endpoints |
+| [backend-schema.md](backend-schema.md) | **All tables and columns** |
+| [api-documentation.md](api-documentation.md) | All API inputs / outputs |
 | [frontend.md](frontend.md) | Current frontend map |
-| [frontend-implementation-guide.md](frontend-implementation-guide.md) | **What frontend must implement next** (Cursor-ready) |
+| [frontend-implementation-plan.md](frontend-implementation-plan.md) | **Frontend plan mapped to live Backend** |
+| [frontend-implementation-guide.md](frontend-implementation-guide.md) | Short Cursor task list (gaps only) |
 
 ## Modules
 

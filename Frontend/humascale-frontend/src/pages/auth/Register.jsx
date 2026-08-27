@@ -34,11 +34,8 @@ export default function Register() {
     setErrors({});
     try {
       await register(form);
-      toast.success(
-        'تم إنشاء حسابك بنجاح! يرجى التحقق من بريدك الإلكتروني لتفعيل الحساب.',
-        { duration: 6000 },
-      );
-      navigate('/login', { replace: true });
+      toast.success('تم إنشاء حسابك وتسجيل دخولك بنجاح!');
+      navigate('/dashboard', { replace: true });
     } catch (err) {
       if (err?.errors) setErrors(err.errors);
       toast.error(err?.message || 'تعذّر إنشاء الحساب.');

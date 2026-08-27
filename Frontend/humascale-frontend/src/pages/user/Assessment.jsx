@@ -12,9 +12,12 @@ import { Button } from '../../components/ui/Button';
 import { FullPageSpinner } from '../../components/ui/Spinner';
 import { QuestionCard } from '../../components/assessment/QuestionCard';
 import { AssessmentProgress } from '../../components/assessment/AssessmentProgress';
+import { useLanguage } from '../../contexts/LanguageContext';
+import { pickLocale } from '../../utils/locale';
 
 export default function Assessment() {
-  useDocumentTitle('تقييم جديد');
+  const { locale, t } = useLanguage();
+  useDocumentTitle(t('assessment.title'));
   const navigate = useNavigate();
   const toast = useToast();
 
@@ -29,11 +32,16 @@ export default function Assessment() {
     const result = [];
     questionsData.pillars.forEach((p) => {
       (p.questions || []).forEach((q) => {
-        result.push({ ...q, pillar_id: p.id, pillar_name: p.name_ar });
+        result.push({
+          ...q,
+          pillar_id: p.id,
+          pillar_name: pickLocale(p, 'name', locale),
+          text: pickLocale(q, 'text', locale),
+        });
       });
     });
     return result;
-  }, [questionsData]);
+  }, [questionsData, locale]);
 
   // Answers: { [question_id]: score }
   const [answers, setAnswers] = useState({});
@@ -50,7 +58,7 @@ export default function Assessment() {
       try {
         const res = await assessmentApi.start();
         if (!cancelled) {
-          setAssessmentId(res.data.assessment_id);
+          setAssessmentId(res.data?.assessment_id || res.assessment_id);
         }
       } catch (err) {
         if (!cancelled) {
@@ -106,7 +114,7 @@ export default function Assessment() {
 
   const handleSubmit = async () => {
     if (!allAnswered) {
-      toast.error('يرجى الإجابة على جميع الأسئلة قبل الإرسال.');
+      toast.error(t('assessment.incomplete'));
       return;
     }
     if (!assessmentId) {
@@ -139,8 +147,8 @@ export default function Assessment() {
   return (
     <PageContainer>
       <PageHeader
-        title="تقييم جاهزية الفريق"
-        subtitle="أجب على 18 سؤالاً في 6 محاور رئيسية"
+        title={t('assessment.title')}
+        subtitle={t('assessment.subtitle')}
       />
 
       <div className="grid gap-6 lg:grid-cols-3">
@@ -149,7 +157,7 @@ export default function Assessment() {
             index={currentIdx}
             total={total}
             pillar={currentQ.pillar_name}
-            question={currentQ.text_ar}
+            question={currentQ.text}
             value={answers[currentQ.id]}
             onChange={handleAnswer}
           />
@@ -161,8 +169,8 @@ export default function Assessment() {
               disabled={currentIdx === 0}
               rightIcon={<ArrowRight size={16} />}
             >
-              السابق
-            </Button>
+                {t('common.back')}
+              </Button>
 
             {currentIdx < total - 1 ? (
               <Button
@@ -170,7 +178,7 @@ export default function Assessment() {
                 disabled={answers[currentQ.id] == null}
                 leftIcon={<ArrowLeft size={16} />}
               >
-                التالي
+                {t('common.next')}
               </Button>
             ) : (
               <Button
@@ -179,7 +187,7 @@ export default function Assessment() {
                 disabled={!allAnswered}
                 leftIcon={<CheckCircle2 size={16} />}
               >
-                إرسال التقييم
+                {t('assessment.submit')}
               </Button>
             )}
           </div>
@@ -211,6 +219,7 @@ export default function Assessment() {
           <AssessmentProgress
             pillars={questionsData.pillars}
             answers={answers}
+            locale={locale}
           />
           <Card className="p-5">
             <h3 className="text-sm font-bold text-slate-900">ملاحظة</h3>

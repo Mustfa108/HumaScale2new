@@ -1,11 +1,11 @@
 # Current Frontend Map
 
 **Root:** `Frontend/humascale-frontend`  
-**Do not change this tree in the Backend-only cycle.** Implementation steps: [`frontend-implementation-guide.md`](frontend-implementation-guide.md)
+**Do not rebuild.** Full plan: [`frontend-implementation-plan.md`](frontend-implementation-plan.md). Short tasks: [`frontend-implementation-guide.md`](frontend-implementation-guide.md).
 
 ## Stack
 
-React 18, Vite 5, Tailwind, React Router v6, Axios, Recharts. Arabic RTL is hardcoded (`index.html` `dir="rtl"`). No i18n library. No theme provider.
+React 18, Vite 5, Tailwind (`darkMode: class`), React Router v6, Axios, Recharts, Leaflet. i18n via `LanguageContext` (AR/EN + RTL/LTR). Theme via `ThemeContext` (`light|dark|system`).
 
 ## Runtime
 
@@ -22,7 +22,8 @@ React 18, Vite 5, Tailwind, React Router v6, Axios, Recharts. Arabic RTL is hard
 | `/assessment` | 18-question survey |
 | `/assessment/:id/results` | Results + action plan + PDF |
 | `/history` | Past assessments |
-| `/profile` | Profile |
+| `/expansion` | Expansion map pins |
+| `/profile` | Profile + locale/theme |
 | `/notifications` | Notifications |
 | `/admin/*` | Admin |
 
@@ -30,14 +31,19 @@ React 18, Vite 5, Tailwind, React Router v6, Axios, Recharts. Arabic RTL is hard
 
 | File | Role |
 |---|---|
-| `src/utils/constants.js` | Pillar labels + **readinessFromScore** (still 40/70 — must update) |
+| `src/utils/constants.js` | Pillar labels + **readinessFromScore (50/70)** |
 | `src/api/client.js` | Axios + token interceptors |
 | `src/api/assessment.js` | Assessment API |
+| `src/api/preferences.js` | Locale/theme |
+| `src/api/actionPlan.js` | Item status |
+| `src/api/expansionAreas.js` | Map pins |
 | `src/api/report.js` | PDF download |
-| `src/components/assessment/ActionPlanView.jsx` | Action plan UI |
+| `src/components/assessment/ActionPlanView.jsx` | Action plan + KPI + status |
 | `src/pages/user/Assessment.jsx` | Survey completeness gate |
 | `src/pages/user/AssessmentResults.jsx` | Results |
-| `src/contexts/AuthContext.jsx` | Auth state |
+| `src/contexts/AuthContext.jsx` | Auth state (`access_token` / skip admin me) |
+| `src/contexts/LanguageContext.jsx` | Locale |
+| `src/contexts/ThemeContext.jsx` | Theme |
 
 ## Envelope
 

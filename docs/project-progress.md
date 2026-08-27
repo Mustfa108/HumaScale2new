@@ -1,6 +1,6 @@
 # Project Progress
 
-**Last Updated:** 2026-08-26
+**Last Updated:** 2026-08-27
 
 ## Completed previously (baseline)
 
@@ -27,6 +27,30 @@
 | Feature tests | Done |
 | Frontend implementation guide + Hoppscotch | Done |
 
-## Next cycle (Frontend)
+## This documentation pass (2026-08-27)
 
-Follow `docs/frontend-implementation-guide.md` without changing Backend contracts unless docs say so.
+| Item | Status |
+|---|---|
+| Full Backend table/field schema | Done — `docs/backend-schema.md` |
+| Full API inputs/outputs | Done — `docs/api-documentation.md` |
+| Frontend plan vs Word requirements + live Laravel | Done — `docs/frontend-implementation-plan.md` |
+
+## Frontend cycle (started 2026-08-27)
+
+| Item | Status |
+|---|---|
+| Vite running on port 5173 | Running |
+| Readiness helper 50/70 | Done |
+| Auth token + `/auth/me` + skip admin me | Done |
+| Envelope unwrap in `useAsync` | Done |
+| AR/EN + RTL/LTR + dark/light | Done |
+| Preferences on Profile | Done |
+| Action item status + KPIs | Done |
+| Expansion map `/expansion` | Done |
+| PDF/AI fallback copy | Done |
+
+## Next
+
+- Wire remaining chrome strings to i18n
+- Admin bilingual labels
+- End-to-end demo against a running Laravel server

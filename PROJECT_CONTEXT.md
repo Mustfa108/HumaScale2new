@@ -1,6 +1,6 @@
 # HumaScale — Project Context
 
-**Last Updated:** 2026-08-26
+**Last Updated:** 2026-08-27
 
 ## Overview
 
@@ -30,8 +30,9 @@ HumaScale is a readiness assessment platform for nonprofit teams. Users answer *
 
 ## Active Work
 
-- **This cycle (Backend + docs): complete.**
-- **Next:** Frontend implementation per `docs/frontend-implementation-guide.md` (no Backend contract changes unless documented).
+- **Frontend in progress** on `Frontend/humascale-frontend`: readiness 50/70, i18n + theme, action-item status, expansion map, envelope unwrap, auth token/`me` fixes.
+- Plan: `docs/frontend-implementation-plan.md`. Laravel contracts stay unchanged.
+- Requirements Word file is functional only; **Laravel routes/fields are the live contract**.
 
 ## Key Backend Paths
 
@@ -46,4 +47,6 @@ HumaScale is a readiness assessment platform for nonprofit teams. Users answer *
 - API returns bilingual fields (`*_ar` / `*_en`); frontend picks language.
 - Theme preference stored on `users.theme` (`light|dark|system`); UI is frontend-only.
 - PDF download must go through authenticated `GET /api/report/{id}/download` (no public storage URL for FE).
-- Frontend work is documented in `docs/frontend-implementation-guide.md` for a later Cursor pass.
+- Frontend work is documented in `docs/frontend-implementation-plan.md` (full plan) and `docs/frontend-implementation-guide.md` (short task list).
+- `GET /api/auth/me` is a flat user object (no `ApiResponse` envelope). User login token key is `access_token`; admin login token key is `token`.
+- `GET /api/admin/me` and `POST /api/admin/logout` are **not** implemented — persist admin from login and clear the token client-side.

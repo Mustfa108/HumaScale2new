@@ -16,13 +16,14 @@ export function Badge({ children, variant = 'neutral', className = '' }) {
 export function ReadinessBadge({ level, className = '' }) {
   const cfg = readinessFromKey(level);
   if (!cfg) return null;
+  const isEn = document.documentElement.lang === 'en';
   return (
     <span className={clsx(cfg.badgeClass, className)}>
       <span
         className="inline-block h-1.5 w-1.5 rounded-full"
         style={{ backgroundColor: cfg.color }}
       />
-      جاهزية {cfg.labelAr}
+      {isEn ? cfg.labelEn : `جاهزية ${cfg.labelAr}`}
     </span>
   );
 }

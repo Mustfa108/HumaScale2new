@@ -4,7 +4,7 @@
 **Audience:** Frontend developer / later Cursor session  
 **Constraint:** Backend contracts below are **already live**. Do not invent new endpoints. Do not rebuild the app.
 
-Read [`PROJECT_CONTEXT.md`](../PROJECT_CONTEXT.md) and [`frontend.md`](frontend.md) first.
+Read [`PROJECT_CONTEXT.md`](../PROJECT_CONTEXT.md), [`frontend.md`](frontend.md), and the full plan [`frontend-implementation-plan.md`](frontend-implementation-plan.md) first. Schema: [`backend-schema.md`](backend-schema.md). API: [`api-documentation.md`](api-documentation.md).
 
 ## Do not rebuild
 

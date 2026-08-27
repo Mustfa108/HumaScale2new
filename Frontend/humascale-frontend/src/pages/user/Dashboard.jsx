@@ -15,9 +15,11 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useAsync } from '../../hooks/useAsync';
 import { useDocumentTitle } from '../../hooks/useDocumentTitle';
 import { dashboardApi } from '../../api/dashboard';
-import { reportApi, downloadReport } from '../../api/report';
-import { readinessFromKey, readinessFromScore, PILLAR_LABELS_AR } from '../../utils/constants';
+import { downloadReport } from '../../api/report';
+import { readinessFromKey } from '../../utils/constants';
 import { formatDate, formatScore } from '../../utils/format';
+import { pillarLabel } from '../../utils/locale';
+import { useLanguage } from '../../contexts/LanguageContext';
 import { PageContainer, PageHeader } from '../../components/layout/Navbar';
 import { PillarRadarChart } from '../../components/charts/PillarRadarChart';
 import { Card, CardBody, EmptyState } from '../../components/ui/Card';
@@ -26,7 +28,8 @@ import { ReadinessBadge } from '../../components/ui/Badge';
 import { FullPageSpinner, InlineSpinner } from '../../components/ui/Spinner';
 
 export default function Dashboard() {
-  useDocumentTitle('لوحة المعلومات');
+  const { locale, t } = useLanguage();
+  useDocumentTitle(t('dashboard.title'));
   const { user } = useAuth();
   const { data, loading, error, refresh } = useAsync(() => dashboardApi.get(), {
     deps: [],
@@ -61,8 +64,8 @@ export default function Dashboard() {
   return (
     <PageContainer>
       <PageHeader
-        title={`أهلاً، ${user?.name?.split(' ')[0] || 'بك'} 👋`}
-        subtitle="هذه نظرة سريعة على آخر تقييم لك"
+        title={`${t('dashboard.greeting')}، ${user?.name?.split(' ')[0] || ''} `}
+        subtitle={locale === 'en' ? 'A snapshot of your latest assessment' : 'هذه نظرة سريعة على آخر تقييم لك'}
         actions={
           <div className="flex items-center gap-2">
             <Button
@@ -85,7 +88,7 @@ export default function Dashboard() {
         <Card className="lg:col-span-1">
           <CardBody>
             <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-              النتيجة الإجمالية
+              {t('dashboard.latestScore')}
             </p>
             <div className="mt-2 flex items-baseline gap-2">
               <span
@@ -99,7 +102,7 @@ export default function Dashboard() {
               <ReadinessBadge level={latest.readiness_level} />
             </div>
             <p className="mt-3 text-sm text-slate-600">
-              {readiness.description}
+              {locale === 'en' ? readiness.descriptionEn : readiness.description}
             </p>
             <div className="mt-5 flex items-center gap-2 text-xs text-slate-500">
               <Award size={14} />
@@ -112,7 +115,7 @@ export default function Dashboard() {
                 to={`/assessment/${latest.id}/results`}
                 className="btn-primary w-full"
               >
-                عرض النتائج الكاملة
+                {t('dashboard.viewResults')}
                 <ArrowLeft size={16} />
               </Link>
               <Link to="/history" className="btn-secondary w-full">
@@ -128,7 +131,7 @@ export default function Dashboard() {
           <CardBody>
             <div className="mb-2 flex items-center justify-between">
               <h3 className="text-base font-bold text-slate-900">
-                رادار المحاور
+                {t('dashboard.radar')}
               </h3>
               <span className="text-xs text-slate-500">
                 {data.radar_chart_data?.length || 0} محاور
@@ -139,6 +142,7 @@ export default function Dashboard() {
               fillColor={readiness.color}
               strokeColor={readiness.color}
               height={320}
+              locale={locale}
             />
           </CardBody>
         </Card>
@@ -152,12 +156,12 @@ export default function Dashboard() {
               <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-50 text-brand-600">
                 <Sparkles size={16} />
               </span>
-              <h3 className="font-bold text-slate-900">ملخص ذكي</h3>
+              {t('dashboard.aiSummary')}
               {latest.ai_ready ? (
-                <span className="badge-good">جاهز</span>
+                <span className="badge-good">{locale === 'en' ? 'Ready' : 'جاهز'}</span>
               ) : (
                 <span className="badge-neutral">
-                  <InlineSpinner label="قيد التوليد…" />
+                  <InlineSpinner label={t('common.loading')} />
                 </span>
               )}
             </div>
@@ -167,8 +171,7 @@ export default function Dashboard() {
               </p>
             ) : (
               <p className="text-sm text-slate-500">
-                الملخص الذكي قيد التوليد — سيتم تحديث هذه الصفحة تلقائياً عند
-                الجاهزية. يمكنك الانتقال لصفحة النتائج للمتابعة.
+                {t('dashboard.aiPending')}
               </p>
             )}
           </CardBody>
@@ -176,13 +179,13 @@ export default function Dashboard() {
 
         <Card>
           <CardBody>
-            <h3 className="font-bold text-slate-900">الإجراءات السريعة</h3>
+            <h3 className="font-bold text-slate-900">{t('dashboard.quickActions')}</h3>
             <div className="mt-4 space-y-2">
               <ActionItem
                 to={`/assessment/${latest.id}/results`}
                 icon={FileDown}
-                title="تحميل تقرير PDF"
-                desc={latest.pdf_ready ? 'التقرير جاهز' : 'يتم تجهيز التقرير…'}
+                title={t('results.pdf')}
+                desc={latest.pdf_ready ? t('dashboard.pdfReady') : t('dashboard.pdfPending')}
                 disabled={!latest.pdf_ready}
                 onClick={async (e) => {
                   if (!latest.pdf_ready) {
@@ -200,14 +203,20 @@ export default function Dashboard() {
               <ActionItem
                 to="/assessment"
                 icon={ClipboardList}
-                title="ابدأ تقييماً جديداً"
-                desc="18 سؤالاً · ~5 دقائق"
+                title={t('nav.assessment')}
+                desc={locale === 'en' ? '18 questions · ~5 minutes' : '18 سؤالاً · ~5 دقائق'}
+              />
+              <ActionItem
+                to="/expansion"
+                icon={Sparkles}
+                title={t('dashboard.mapPins')}
+                desc={`${data.expansion_areas_count || 0}`}
               />
               <ActionItem
                 to="/history"
                 icon={HistoryIcon}
-                title="عرض السجل"
-                desc={`لديك ${totalAssessments} تقييم`}
+                title={t('nav.history')}
+                desc={`${totalAssessments}`}
               />
             </div>
           </CardBody>
@@ -220,7 +229,7 @@ export default function Dashboard() {
           <CardBody>
             <h3 className="mb-4 flex items-center gap-2 font-bold text-slate-900">
               <CheckCircle2 size={18} className="text-emerald-600" />
-              نقاط القوة
+              {t('dashboard.strengths')}
             </h3>
             {(data.strengths || []).length === 0 ? (
               <p className="text-sm text-slate-500">لا توجد بيانات بعد.</p>
@@ -228,11 +237,11 @@ export default function Dashboard() {
               <ul className="space-y-3">
                 {data.strengths.map((s) => (
                   <li
-                    key={s.pillar_ar}
-                    className="flex items-center justify-between rounded-xl bg-emerald-50/50 px-4 py-3"
+                    key={s.pillar_ar || s.pillar_en}
+                    className="flex items-center justify-between rounded-xl bg-emerald-50/50 px-4 py-3 dark:bg-emerald-950/30"
                   >
-                    <span className="text-sm font-semibold text-slate-800">
-                      {s.pillar_ar}
+                    <span className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+                      {pillarLabel(s, locale)}
                     </span>
                     <span className="text-sm font-bold text-emerald-700">
                       {formatScore(s.percentage)}
@@ -248,7 +257,7 @@ export default function Dashboard() {
           <CardBody>
             <h3 className="mb-4 flex items-center gap-2 font-bold text-slate-900">
               <AlertTriangle size={18} className="text-amber-600" />
-              نقاط الضعف
+              {t('dashboard.weaknesses')}
             </h3>
             {(data.weaknesses || []).length === 0 ? (
               <p className="text-sm text-slate-500">لا توجد نقاط ضعف حالياً.</p>
@@ -256,11 +265,11 @@ export default function Dashboard() {
               <ul className="space-y-3">
                 {data.weaknesses.map((s) => (
                   <li
-                    key={s.pillar_ar}
-                    className="flex items-center justify-between rounded-xl bg-amber-50/50 px-4 py-3"
+                    key={s.pillar_ar || s.pillar_en}
+                    className="flex items-center justify-between rounded-xl bg-amber-50/50 px-4 py-3 dark:bg-amber-950/30"
                   >
-                    <span className="text-sm font-semibold text-slate-800">
-                      {s.pillar_ar}
+                    <span className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+                      {pillarLabel(s, locale)}
                     </span>
                     <span className="text-sm font-bold text-amber-700">
                       {formatScore(s.percentage)}
@@ -277,21 +286,22 @@ export default function Dashboard() {
 }
 
 function NoAssessmentState({ user }) {
+  const { t } = useLanguage();
   return (
     <PageContainer>
       <PageHeader
-        title={`أهلاً، ${user?.name?.split(' ')[0] || 'بك'} 👋`}
-        subtitle="ابدأ رحلتك في تقييم جاهزية فريقك"
+        title={`${t('dashboard.greeting')}، ${user?.name?.split(' ')[0] || ''}`}
+        subtitle={t('dashboard.emptyDesc')}
       />
       <Card>
         <CardBody>
           <EmptyState
             icon={<ClipboardList size={48} />}
-            title="لم تقم بأي تقييم بعد"
-            description="ابدأ تقييمك الأول الآن! ستحتاج إلى 5 دقائق فقط للإجابة على 18 سؤالاً."
+            title={t('dashboard.emptyTitle')}
+            description={t('dashboard.emptyDesc')}
             action={
               <Link to="/assessment" className="btn-primary">
-                ابدأ التقييم
+                {t('dashboard.startFirst')}
                 <ArrowLeft size={16} />
               </Link>
             }

@@ -1,7 +1,7 @@
 # HumaScale Improvements Plan (Laravel)
 
-**Last Updated:** 2026-08-26  
-**Scope this cycle:** Backend implementation + documentation. Frontend code deferred (see `frontend-implementation-guide.md`).
+**Last Updated:** 2026-08-27  
+**Scope this cycle:** Backend schema + API documentation + frontend execution plan. React code still deferred until implementation starts (`frontend-implementation-plan.md`).
 
 ## Official decisions
 
@@ -23,7 +23,7 @@
 
 ## Frontend (later)
 
-Follow [`frontend-implementation-guide.md`](frontend-implementation-guide.md). Do not change Backend contracts unless this plan is updated.
+Follow [`frontend-implementation-plan.md`](frontend-implementation-plan.md). Do not change Backend contracts unless this plan is updated.
 
 ## Out of scope (this cycle)
 

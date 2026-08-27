@@ -1,7 +1,8 @@
 import { CheckCircle2, Circle } from 'lucide-react';
 import clsx from 'clsx';
+import { pickLocale } from '../../utils/locale';
 
-export function AssessmentProgress({ pillars = [], answers = {} }) {
+export function AssessmentProgress({ pillars = [], answers = {}, locale = 'ar' }) {
   // Total questions across all pillars
   const totalQuestions = pillars.reduce(
     (acc, p) => acc + (p.questions?.length || 0),
@@ -46,7 +47,7 @@ export function AssessmentProgress({ pillars = [], answers = {} }) {
                 ) : (
                   <Circle size={16} className="text-slate-300" />
                 )}
-                {p.name_ar}
+                {pickLocale(p, 'name', locale)}
               </span>
               <span
                 className={clsx(

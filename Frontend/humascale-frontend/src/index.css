@@ -10,13 +10,17 @@
     color-scheme: light;
   }
 
+  html.dark {
+    color-scheme: dark;
+  }
+
   html {
     font-family: 'Cairo', 'Tajawal', system-ui, sans-serif;
     -webkit-text-size-adjust: 100%;
   }
 
   body {
-    @apply bg-slate-50 text-slate-900;
+    @apply bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100;
     font-feature-settings: 'kern';
   }
 
@@ -45,7 +49,7 @@
   }
 
   .card {
-    @apply rounded-2xl bg-white shadow-card border border-slate-100;
+    @apply rounded-2xl bg-white shadow-card border border-slate-100 dark:bg-slate-900 dark:border-slate-800;
   }
 
   .card-padded {
@@ -61,7 +65,7 @@
   }
 
   .btn-secondary {
-    @apply btn bg-white text-slate-800 border border-slate-200 hover:bg-slate-50 focus:ring-slate-300;
+    @apply btn bg-white text-slate-800 border border-slate-200 hover:bg-slate-50 focus:ring-slate-300 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 dark:hover:bg-slate-700;
   }
 
   .btn-danger {
@@ -69,15 +73,15 @@
   }
 
   .btn-ghost {
-    @apply btn bg-transparent text-slate-700 hover:bg-slate-100;
+    @apply btn bg-transparent text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800;
   }
 
   .input {
-    @apply w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm shadow-sm transition placeholder:text-slate-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200;
+    @apply w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm shadow-sm transition placeholder:text-slate-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100;
   }
 
   .label {
-    @apply block text-sm font-medium text-slate-700 mb-1.5;
+    @apply block text-sm font-medium text-slate-700 mb-1.5 dark:text-slate-300;
   }
 
   .badge {
@@ -102,13 +106,13 @@
   }
 
   .heading-1 {
-    @apply text-3xl md:text-4xl font-bold text-slate-900 tracking-tight;
+    @apply text-3xl md:text-4xl font-bold text-slate-900 tracking-tight dark:text-slate-50;
   }
   .heading-2 {
-    @apply text-2xl md:text-3xl font-bold text-slate-900 tracking-tight;
+    @apply text-2xl md:text-3xl font-bold text-slate-900 tracking-tight dark:text-slate-50;
   }
   .heading-3 {
-    @apply text-xl md:text-2xl font-bold text-slate-900;
+    @apply text-xl md:text-2xl font-bold text-slate-900 dark:text-slate-50;
   }
 }
 
@@ -120,8 +124,11 @@
     text-wrap: balance;
   }
 
-  /* Recharts polish for RTL: invert the legend side */
-  .recharts-default-legend {
-    direction: rtl;
+  /* Leaflet map fills its parent */
+  .leaflet-container {
+    height: 100%;
+    width: 100%;
+    z-index: 0;
+    font-family: inherit;
   }
 }

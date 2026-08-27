@@ -1,7 +1,9 @@
 # Backend Architecture
 
-**Last Updated:** 2026-08-26  
-**Root:** `Backend/Backend`
+**Last Updated:** 2026-08-27  
+**Root:** `Backend/Backend`  
+**Tables/columns:** [`backend-schema.md`](backend-schema.md)  
+**HTTP contract:** [`api-documentation.md`](api-documentation.md)
 
 ## Stack
 

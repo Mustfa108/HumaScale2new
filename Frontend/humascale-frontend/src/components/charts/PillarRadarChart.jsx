@@ -7,7 +7,8 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from 'recharts';
-import { PILLAR_LABELS_AR } from '../../utils/constants';
+import { PILLAR_LABELS_AR, PILLAR_LABELS_EN } from '../../utils/constants';
+import { pillarLabel } from '../../utils/locale';
 
 export function PillarRadarChart({
   data = [],
@@ -15,10 +16,11 @@ export function PillarRadarChart({
   fillColor = '#1f3ff5',
   strokeColor = '#1f3ff5',
   showLabels = true,
+  locale = 'ar',
 }) {
-  // Map pillar_key -> arabic label; fall back to whatever the API sent
+  const labels = locale === 'en' ? PILLAR_LABELS_EN : PILLAR_LABELS_AR;
   const chartData = data.map((d) => ({
-    pillar: d.pillar_ar || PILLAR_LABELS_AR[d.pillar_key] || d.pillar_key,
+    pillar: pillarLabel(d, locale) || labels[d.pillar_key] || d.pillar_key,
     value: Number(d.percentage) || 0,
   }));
 

@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { authApi, adminAuthApi } from '../api/auth';
 import { tokenKeys, userKeys } from '../api/client';
+import { extractToken, extractUser } from '../utils/api';
 
 const AuthContext = createContext(null);
 
@@ -13,9 +14,9 @@ function readStored(actor) {
   }
 }
 
-function persist(actor, user) {
-  if (user) {
-    localStorage.setItem(userKeys[actor], JSON.stringify(user));
+function persist(actor, record) {
+  if (record) {
+    localStorage.setItem(userKeys[actor], JSON.stringify(record));
   } else {
     localStorage.removeItem(userKeys[actor]);
   }
@@ -27,6 +28,12 @@ function persistToken(actor, token) {
   } else {
     localStorage.removeItem(tokenKeys[actor]);
   }
+}
+
+function stripSecrets(payload) {
+  if (!payload || typeof payload !== 'object') return payload;
+  const { access_token, token, token_type, ...rest } = payload;
+  return rest;
 }
 
 export function AuthProvider({ children }) {
@@ -43,26 +50,30 @@ export function AuthProvider({ children }) {
       if (userToken) {
         try {
           const res = await authApi.me();
-          if (!cancelled && res?.data) {
-            setUser(res.data);
-            persist('user', res.data);
+          const profile = extractUser(res);
+          if (!cancelled && profile) {
+            setUser(profile);
+            persist('user', profile);
           }
         } catch {
-          if (!cancelled) setUser(null);
-        }
-      }
-      if (adminToken) {
-        try {
-          const res = await adminAuthApi.me();
-          if (!cancelled && res?.data) {
-            setAdmin(res.data);
-            persist('admin', res.data);
+          if (!cancelled) {
+            persistToken('user', null);
+            persist('user', null);
+            setUser(null);
           }
-        } catch {
-          if (!cancelled) setAdmin(null);
         }
       }
-      if (!cancelled) setBootstrapping(false);
+
+      // GET /api/admin/me is not implemented — keep stored admin if a token exists.
+      if (!cancelled) {
+        if (adminToken) {
+          const storedAdmin = readStored('admin');
+          if (storedAdmin) setAdmin(storedAdmin);
+        } else {
+          setAdmin(null);
+        }
+        setBootstrapping(false);
+      }
     }
     restore();
     return () => {
@@ -70,104 +81,94 @@ export function AuthProvider({ children }) {
     };
   }, []);
 
-  /* ===================== User actions ===================== */
-  const login = useCallback(async (email, password) => {
-    const res = await authApi.login({ email, password });
-    
-    // 1. البحث عن التوكن (تم التبسيط للعمل مباشرة مع كود LoginController الجديد)
-    // الباك إند يرسل الآن: { data: { access_token: '...', ... } }
-    const responseData = res?.data?.data;
-    const token = responseData?.access_token || res?.data?.token || res?.data?.access_token;
-    
-    // إذا لم نجد توكن، نرمي خطأ واضحاً
-    if (!token) {
-        console.error('فشل في العثور على التوكن في استجابة السيرفر:', res);
+  const hydrateUser = useCallback(async (fallback) => {
+    try {
+      const me = await authApi.me();
+      const profile = extractUser(me) || stripSecrets(fallback);
+      persist('user', profile);
+      setUser(profile);
+      return profile;
+    } catch {
+      const profile = stripSecrets(fallback);
+      persist('user', profile);
+      setUser(profile);
+      return profile;
+    }
+  }, []);
+
+  const login = useCallback(
+    async (email, password) => {
+      const res = await authApi.login({ email, password });
+      const token = extractToken(res);
+      if (!token) {
         throw new Error('لم يتلق النظام رمز الدخول. تأكد من إعدادات الباك إند.');
-    }
+      }
+      persistToken('user', token);
+      persistToken('admin', null);
+      persist('admin', null);
+      setAdmin(null);
+      return hydrateUser(res.data);
+    },
+    [hydrateUser],
+  );
 
-    // 2. بناء كائن المستخدم (استخراج البيانات)
-    let userObject = responseData || res?.data;
-    if (userObject && userObject.user) {
-        userObject = userObject.user;
-    }
-
-    // 3. تخزين البيانات
-    persistToken('user', token);
-    persist('user', userObject);
-    setUser(userObject);
-    
-    // مسح أي جلسة أدمن معلقة
-    persistToken('admin', null);
-    setAdmin(null);
-    
-    // 4. إعادة تحميل الصفحة لضمان تحديث حالة التطبيق بعد الدخول
-    window.location.reload();
-    
-    return userObject;
-  }, []);
-
-  const register = useCallback(async (payload) => {
-    const res = await authApi.register(payload);
-    return res.data;
-  }, []);
+  const register = useCallback(
+    async (payload) => {
+      const res = await authApi.register(payload);
+      const token = extractToken(res);
+      if (token) {
+        persistToken('user', token);
+        persistToken('admin', null);
+        persist('admin', null);
+        setAdmin(null);
+        return hydrateUser(res.data);
+      }
+      return res.data;
+    },
+    [hydrateUser],
+  );
 
   const logout = useCallback(async () => {
     try {
       await authApi.logout();
     } catch {
-      // ignore — clear locally anyway
+      /* clear locally anyway */
     }
     persistToken('user', null);
     persist('user', null);
     setUser(null);
-    // إعادة تحميل الصفحة بعد الخروج لضمان تنظيف الحالة
-    window.location.reload();
   }, []);
 
-  /* ===================== Admin actions ===================== */
   const adminLogin = useCallback(async (email, password) => {
     const res = await adminAuthApi.login({ email, password });
-    
-    const responseData = res?.data?.data;
-    const token = responseData?.access_token || res?.data?.token || res?.data?.access_token;
-
+    const token = extractToken(res);
     if (!token) {
-        throw new Error('لم يتلق النظام رمز دخول الأدمن.');
+      throw new Error('لم يتلق النظام رمز دخول الأدمن.');
     }
-
-    let adminObject = responseData || res?.data;
-    if (adminObject && adminObject.admin) {
-        adminObject = adminObject.admin;
-    }
-
+    const adminObject = res.data?.admin || stripSecrets(res.data);
     persistToken('admin', token);
     persist('admin', adminObject);
     setAdmin(adminObject);
     persistToken('user', null);
+    persist('user', null);
     setUser(null);
-    
-    window.location.reload();
     return adminObject;
   }, []);
 
   const adminLogout = useCallback(async () => {
-    try {
-      await adminAuthApi.logout();
-    } catch {
-      // ignore
-    }
+    // POST /api/admin/logout is not implemented.
     persistToken('admin', null);
     persist('admin', null);
     setAdmin(null);
-    window.location.reload();
   }, []);
 
   const refreshUser = useCallback(async () => {
     try {
       const res = await authApi.me();
-      if (res?.data) {
-        setUser(res.data);
-        persist('user', res.data);
+      const profile = extractUser(res);
+      if (profile) {
+        persist('user', profile);
+        setUser(profile);
       }
     } catch {
       /* noop */
